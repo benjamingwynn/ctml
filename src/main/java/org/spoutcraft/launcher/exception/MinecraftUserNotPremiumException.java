@@ -35,7 +35,7 @@ public class MinecraftUserNotPremiumException extends Exception {
 	}
 
 	public MinecraftUserNotPremiumException() {
-		this(null, "User not premium");
+		this(null, "Something broke. User not Premium.");
 	}
 
 	@Override

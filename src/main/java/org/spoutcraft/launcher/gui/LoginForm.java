@@ -83,7 +83,6 @@ import org.spoutcraft.launcher.async.DownloadListener;
 import org.spoutcraft.launcher.exception.AccountMigratedException;
 import org.spoutcraft.launcher.exception.BadLoginException;
 import org.spoutcraft.launcher.exception.MCNetworkException;
-import org.spoutcraft.launcher.exception.MinecraftUserNotPremiumException;
 import org.spoutcraft.launcher.exception.NoMirrorsAvailableException;
 import org.spoutcraft.launcher.exception.OutdatedMCLauncherException;
 import org.spoutcraft.launcher.gui.widget.ComboBoxRenderer;
@@ -191,7 +190,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		lblMinecraftUsername.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblMinecraftUsername.setBounds(-17, 17, 150, 14);
 
-		JLabel lblPassword = new JLabel("Password: ");
+		JLabel lblPassword = new JLabel("Cracked: ");
 		lblPassword.setFont(new Font("Arial", Font.PLAIN, 11));
 		lblPassword.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblPassword.setBounds(33, 42, 100, 20);
@@ -634,10 +633,10 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 			UserPasswordInformation info = usernames.get(this.usernameField.getSelectedItem().toString());
 			if (info != null) {
 				if (info.isHash) {
-					this.passwordField.setText("");
+					this.passwordField.setText("1234");
 					this.rememberCheckbox.setSelected(false);
 				} else {
-					this.passwordField.setText(info.password);
+					this.passwordField.setText("1234");
 					this.rememberCheckbox.setSelected(true);
 				}
 			}
@@ -665,77 +664,13 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 			@Override
 			protected Boolean doInBackground() {
 				progressBar.setVisible(true);
-				progressBar.setString("Connecting to www.minecraft.net...");
+				progressBar.setString("Just a second...");
 				String password = pass.toString();
-				try {
-					values = MinecraftUtils.doLogin(user, pass, progressBar);
-					return true;
-				} catch (AccountMigratedException e) {
-					JOptionPane.showMessageDialog(getParent(), "Account migrated, use e-mail as username");
-					this.cancel(true);
-					progressBar.setVisible(false);
-				} catch (BadLoginException e) {
-					JOptionPane.showMessageDialog(getParent(), "Incorrect usernameField/passwordField combination");
-					this.cancel(true);
-					progressBar.setVisible(false);
-				} catch (MinecraftUserNotPremiumException e) {
-					JOptionPane.showMessageDialog(getParent(), "You purchase a minecraft account to play");
-					this.cancel(true);
-					progressBar.setVisible(false);
-				} catch (MCNetworkException e) {
-					UserPasswordInformation info = null;
-
-					for (String username : usernames.keySet()) {
-						if (username.equalsIgnoreCase(user)) {
-							info = usernames.get(username);
-							break;
-						}
-					}
-
-					boolean authFailed = (info == null);
-
-					if (!authFailed) {
-						if (info.isHash) {
-							try {
-								MessageDigest digest = MessageDigest.getInstance("SHA-256");
-								byte[] hash = digest.digest(pass.getBytes());
-								for (int i = 0; i < hash.length; i++) {
-									if (hash[i] != info.passwordHash[i]) {
-										authFailed = true;
-										break;
-									}
-								}
-							} catch (NoSuchAlgorithmException ex) {
-								authFailed = true;
-							}
-						} else {
-							authFailed = !(password.equals(info.password));
-						}
-					}
-
-					if (authFailed) {
-						JOptionPane.showMessageDialog(getParent(), "Unable to authenticate account with minecraft.net");
-					} else {
-						int result = JOptionPane.showConfirmDialog(getParent(), "Would you like to run in offline mode?", "Unable to Connect to Minecraft.net", JOptionPane.YES_NO_OPTION);
-						if (result == JOptionPane.YES_OPTION) {
-							values = new String[] { "0", "0", user, "0" };
-							return true;
-						}
-					}
-					this.cancel(true);
-					progressBar.setVisible(false);
-				} catch (OutdatedMCLauncherException e) {
-					JOptionPane.showMessageDialog(getParent(), "Incompatible Login Version.");
-					progressBar.setVisible(false);
-				} catch (UnsupportedEncodingException e) {
-					e.printStackTrace();
-					this.cancel(true);
-					progressBar.setVisible(false);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				enableUI();
+				values = new String[] { "0", "0", user, "0" };
 				this.cancel(true);
+				progressBar.setVisible(false);
+				//enableUI();
+				//this.cancel(true);
 				return false;
 			}
 
@@ -760,7 +695,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 						usernames.put(gameUpdater.user, new UserPasswordInformation(password, profileName));
 					} else {
 						if (digest == null) {
-							usernames.put(gameUpdater.user, new UserPasswordInformation(""));
+							usernames.put(gameUpdater.user, new UserPasswordInformation("1234"));
 						} else {
 							usernames.put(gameUpdater.user, new UserPasswordInformation(digest.digest(password.getBytes())));
 						}
@@ -968,7 +903,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 
 		public boolean	isHash;
 		public byte[]		passwordHash	= null;
-		public String		password		= null;
+		public String		password		= "1234";
 		private String		profileName		= "";
 
 		public UserPasswordInformation(String pass, String profileName) {
